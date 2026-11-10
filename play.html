@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Cabin Deck – מאזינים עכשיו</title>
+<meta name="apple-itunes-app" content="app-id=6830995386">
+<meta property="og:title" content="Cabin Deck – רדיו ישראלי">
+<meta property="og:description" content="מאזינים עכשיו ברדיו. פתחו את התחנה ב-Cabin Deck.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;700;800&family=IBM+Plex+Mono:wght@500&display=swap">
+<style>
+/* Layout: one centered card under the dial strip; the station is the headline, two actions below it */
+:root {
+  --bg:#F6F4EF; --surface:#FFFFFF; --text:#1E2129; --muted:#5E6573; --line:#E2DED4; --dial:#B86E08; --on-dial:#FFFFFF;
+  --display:"Heebo","Arial Hebrew",Arial,sans-serif; --mono:"IBM Plex Mono",ui-monospace,Menlo,monospace;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --bg:#14171D; --surface:#1C2028; --text:#F2F3F5; --muted:#9AA1AE; --line:#313744; --dial:#F0A83A; --on-dial:#1B1408; color-scheme:dark; } }
+:root[data-theme="dark"] { --bg:#14171D; --surface:#1C2028; --text:#F2F3F5; --muted:#9AA1AE; --line:#313744; --dial:#F0A83A; --on-dial:#1B1408; color-scheme:dark; }
+* { box-sizing:border-box; }
+body { margin:0; background:var(--bg); color:var(--text); font-family:var(--display); font-size:16px; line-height:1.6;
+       padding-left:max(16px, env(safe-area-inset-left, 0px)); padding-right:max(16px, env(safe-area-inset-right, 0px)); }
+.wrap { max-width:520px; margin:0 auto; padding-block:32px 56px; display:flex; flex-direction:column; gap:22px; }
+.dial { font-family:var(--mono); color:var(--dial); font-size:13px; letter-spacing:.08em; display:flex; justify-content:space-between;
+        border-bottom:2px solid var(--line); padding-bottom:6px; direction:ltr; }
+.brand { font-weight:800; font-size:1.1rem; margin:0; }
+.card { background:var(--surface); border:1px solid var(--line); border-radius:16px; padding:24px 22px; display:flex; flex-direction:column; gap:8px; }
+.eyebrow { color:var(--muted); font-size:.95rem; margin:0; }
+h1 { font-weight:800; font-size:2.2rem; line-height:1.15; margin:0; text-wrap:balance; overflow-wrap:anywhere; }
+.song { font-size:1.15rem; font-weight:700; margin:6px 0 0; overflow-wrap:anywhere; }
+.artist { color:var(--muted); margin:0; overflow-wrap:anywhere; }
+.actions { display:flex; flex-direction:column; gap:10px; }
+.btn { display:flex; align-items:center; justify-content:center; min-height:54px; border-radius:14px; font-weight:800; font-size:1.05rem;
+       text-decoration:none; padding:0 18px; }
+.primary { background:var(--dial); color:var(--on-dial); }
+.secondary { border:1.5px solid var(--line); color:var(--text); }
+.btn:focus-visible { outline:3px solid var(--dial); outline-offset:3px; }
+.note { color:var(--muted); font-size:.9rem; margin:0; }
+[hidden] { display:none !important; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="dial" aria-hidden="true"><span>88</span><span>92</span><span>96</span><span>100</span><span>104</span><span>108 MHz</span></div>
+  <p class="brand">Cabin Deck</p>
+  <div class="card">
+    <p class="eyebrow" id="eyebrow">מאזינים עכשיו</p>
+    <h1 id="station">רדיו ישראלי</h1>
+    <p class="song" id="song" hidden></p>
+    <p class="artist" id="artist" hidden></p>
+  </div>
+  <div class="actions">
+    <a class="btn primary" id="open" href="cabindeck://play">פתח את התחנה ב-Cabin Deck</a>
+    <a class="btn secondary" id="store" href="https://apps.apple.com/app/id6830995386">הורדה מה-App Store</a>
+  </div>
+  <p class="note" id="note">Cabin Deck היא אפליקציית רדיו ישראלית לאייפון: כל התחנות וזיהוי השיר שמתנגן. חינם ובלי פרסומות.</p>
+</div>
+<script>
+// The link carries only the station and the song (s, n, t, a). Everything is shown as plain text.
+(function () {
+  var q = new URLSearchParams(location.search);
+  var clean = function (v, max) { return (v || "").replace(/\s+/g, " ").trim().slice(0, max); };
+  var id = clean(q.get("s"), 40), name = clean(q.get("n"), 60), title = clean(q.get("t"), 120), artist = clean(q.get("a"), 120);
+  var english = !/^(he|iw)/i.test(navigator.language || "he");
+  if (english) {
+    document.documentElement.lang = "en"; document.documentElement.dir = "ltr";
+    document.title = "Cabin Deck – Listening now";
+    document.getElementById("eyebrow").textContent = "Listening now";
+    document.getElementById("station").textContent = "Israeli radio";
+    document.getElementById("open").textContent = "Open the station in Cabin Deck";
+    document.getElementById("store").textContent = "Get it on the App Store";
+    document.getElementById("note").textContent = "Cabin Deck is an Israeli radio app for iPhone: every station, and the song that's playing. Free, with no ads.";
+  }
+  if (name) document.getElementById("station").textContent = name;
+  if (title) { var s = document.getElementById("song"); s.textContent = title; s.hidden = false; }
+  if (title && artist) { var a = document.getElementById("artist"); a.textContent = artist; a.hidden = false; }
+  if (/^[a-z0-9-]+$/i.test(id)) document.getElementById("open").href = "cabindeck://play?s=" + encodeURIComponent(id);
+})();
+</script>
+</body>
+</html>
